@@ -25,29 +25,29 @@ public class Students extends HinlogESystem{
             String username = nextId + name;
             String password = "AdDU" + name;
             //create user
-            try {
-                String createUserQuery = "CREATE USER '"+ username+ "'@'%' IDENTIFIED BY '" + password + "';";
-                st.executeUpdate(createUserQuery);
-                
-                System.out.println("student user created: " + username);
-                
-            } catch (Exception ex){
-                System.out.println("Failed to create student user / user already exists: " + ex);
-            }
+//            try {
+//                String createUserQuery = "CREATE USER '"+ username+ "'@'%' IDENTIFIED BY '" + password + "';";
+//                st.executeUpdate(createUserQuery);
+//                
+//                System.out.println("student user created: " + username);
+//                
+//            } catch (Exception ex){
+//                System.out.println("Failed to create student user / user already exists: " + ex);
+//            }
             
             //grant privelages
-            try {
-                String updatePrivilageQuery = "GRANT SELECT ON " + db + ".* TO '" + username + "'@'%';";
-                st.executeUpdate(updatePrivilageQuery);
-
-                String flushQuery = "FLUSH PRIVILEGES;";
-                st.executeUpdate(flushQuery);
-                    
-                System.out.println("select granted on " + db + " for " + username);
-            
-            } catch (Exception ex){
-                System.out.println("Failed to grant privileges ");
-            }
+//            try {
+//                String updatePrivilageQuery = "GRANT SELECT ON " + db + ".* TO '" + username + "'@'%';";
+//                st.executeUpdate(updatePrivilageQuery);
+//
+//                String flushQuery = "FLUSH PRIVILEGES;";
+//                st.executeUpdate(flushQuery);
+//                    
+//                System.out.println("select granted on " + db + " for " + username);
+//            
+//            } catch (Exception ex){
+//                System.out.println("Failed to grant privileges ");
+//            }
                
         } catch (Exception ex){
             System.out.println("Failed to Insert Student: " + ex);

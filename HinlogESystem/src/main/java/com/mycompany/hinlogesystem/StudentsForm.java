@@ -507,6 +507,7 @@ public class StudentsForm extends javax.swing.JFrame {
         int row = studentsTable.getSelectedRow();
         int subId = enrolled.getsubjid();           
         int studId = Integer.parseInt(studentsTable.getValueAt(row, 0).toString());
+        String studName = studentsTable.getValueAt(row, 1).toString();
         
         int response = JOptionPane.showConfirmDialog(null,"Enroll Student ID:" + studId + " to subject ID:" + subId,"Alert", JOptionPane.OK_CANCEL_OPTION);
         
@@ -523,6 +524,33 @@ public class StudentsForm extends javax.swing.JFrame {
                         String query = enrolled.enrollStud(studId);
                         st.executeUpdate(query);
                         System.out.println("Insert Enroll Success");
+                        
+                        String username = studId + studName;
+                        String password = "AdDU" + studName;
+                        
+                        try {
+                            
+                            String createUserQuery = "CREATE USER '"+ username+ "'@'%' IDENTIFIED BY '" + password + "';";
+                            st.executeUpdate(createUserQuery);
+
+                            System.out.println("student user created: " + username);
+
+                        } catch (Exception ex){
+                            System.out.println("Failed to create student user / user already exists: " + ex);
+                        }
+                        
+                        try {
+                            String updatePrivilageQuery = "GRANT SELECT ON " + system.db + ".* TO '" + username + "'@'%';";
+                            st.executeUpdate(updatePrivilageQuery);
+
+                            String flushQuery = "FLUSH PRIVILEGES;";
+                            st.executeUpdate(flushQuery);
+
+                            System.out.println("select granted on " + system.db + " for " + username);
+
+                        } catch (Exception ex){
+                            System.out.println("Failed to grant privileges ");
+                        }
                         
                     } catch (Exception ex){
                         System.out.println("Failed to Enroll: " + ex);

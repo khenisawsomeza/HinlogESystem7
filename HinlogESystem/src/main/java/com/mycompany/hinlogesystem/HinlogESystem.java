@@ -15,7 +15,7 @@ public class HinlogESystem {
     static String db = "";
     static String uname = "";
     static String pswd = "";   
-    static String host = "10.4.44.83";
+    static String host = "localhost";
     static String port = ":3306";
     static String server = host + port;
     
@@ -188,8 +188,95 @@ public class HinlogESystem {
         } catch(Exception e){
             System.out.println("Failed to create Database: " + db + " (" + e +")");
         } 
+        
+        switch (db) {
+            case "2ndSem_Sy2025_2026":
+                try {
+                    copyData("1stSem_Sy2025_2026", db);
+                } catch (Exception e) {
+                    System.out.println("Error while copying data: " + e.getMessage());
+                }
+                break;
+
+            case "Summer_Sy2025_2026":
+                try {
+                    copyData("2ndSem_Sy2025_2026", db);
+                    System.out.println("Data copied successfully.");
+                } catch (Exception e) {
+                    System.out.println("Error while copying data: " + e.getMessage());
+                }
+                break;
+
+            case "1stSem_Sy2026_2027":
+                try {
+                    copyData("Summer_Sy2025_2026", db);
+                } catch (Exception e) {
+                    System.out.println("Error while copying data: " + e.getMessage());
+                }
+                break;
+
+            case "2ndSem_Sy2026_2027":
+                try {
+                    copyData("1stSem_Sy2026_2027", db);
+                } catch (Exception e) {
+                    System.out.println("Error while copying data: " + e.getMessage());
+                }
+                break;
+
+            case "Summer_Sy2026_2027":
+                try {
+                    copyData("2ndSem_Sy2026_2027", db);
+                } catch (Exception e) {
+                    System.out.println("Error while copying data: " + e.getMessage());
+                }
+                break;
+
+            case "1stSem_Sy2027_2028":
+                try {
+                    copyData("Summer_Sy2026_2027", db);
+                } catch (Exception e) {
+                    System.out.println("Error while copying data: " + e.getMessage());
+                }
+                break;
+
+            case "2ndSem_Sy2027_2028":
+                try {
+                    copyData("1stSem_Sy2027_2028", db);
+                } catch (Exception e) {
+                    System.out.println("Error while copying data: " + e.getMessage());
+                }
+                break;
+
+            case "Summer_Sy2027_2028":
+                try {
+                    copyData("2ndSem_Sy2027_2028", db);
+                } catch (Exception e) {
+                    System.out.println("Error while copying data: " + e.getMessage());
+                }
+                break;
+                
+            default:
+                System.out.println("no database source found");
+            }
            
         DBConnect();
 
         }
+    
+    public static void copyData(String sourceDb, String targetDb) throws Exception {
+
+        try {
+
+            String copyQuery = "INSERT INTO " + targetDb + ".students" +
+                         " SELECT * FROM " + sourceDb + ".students";
+            st.executeUpdate(copyQuery);
+
+            System.out.println("Data copied from " + sourceDb + " to " + targetDb);
+            
+        } catch (Exception e){
+            System.out.println("Failed to Copy data from " + sourceDb + ": " + e);
+        }
+        
+    }
+
 }
