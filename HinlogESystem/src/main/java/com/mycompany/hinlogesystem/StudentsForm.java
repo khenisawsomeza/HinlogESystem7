@@ -13,6 +13,7 @@ public class StudentsForm extends javax.swing.JFrame {
       
     TeachersForm Tform = new TeachersForm();
     SubjectsForm Subform = new SubjectsForm();
+    SelectSchoolYear AIForm = new SelectSchoolYear();
 
     public StudentsForm() {
         initComponents();
@@ -65,6 +66,8 @@ public class StudentsForm extends javax.swing.JFrame {
         firstSem27 = new javax.swing.JMenuItem();
         secondSem27 = new javax.swing.JMenuItem();
         summer27 = new javax.swing.JMenuItem();
+        aiMenu = new javax.swing.JMenu();
+        trainMenu = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -379,6 +382,23 @@ public class StudentsForm extends javax.swing.JFrame {
         dataMenu.add(summer27);
 
         jMenuBar1.add(dataMenu);
+
+        aiMenu.setText("AI");
+        aiMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aiMenuActionPerformed(evt);
+            }
+        });
+
+        trainMenu.setText("Train Enroll Subject");
+        trainMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                trainMenuActionPerformed(evt);
+            }
+        });
+        aiMenu.add(trainMenu);
+
+        jMenuBar1.add(aiMenu);
 
         setJMenuBar(jMenuBar1);
 
@@ -712,6 +732,15 @@ public class StudentsForm extends javax.swing.JFrame {
         Tform.showRecords();
     }//GEN-LAST:event_summer27ActionPerformed
 
+    private void aiMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aiMenuActionPerformed
+        
+    }//GEN-LAST:event_aiMenuActionPerformed
+
+    private void trainMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trainMenuActionPerformed
+        AIForm.setVisible(true);
+        AIForm.setLocationRelativeTo(null);
+    }//GEN-LAST:event_trainMenuActionPerformed
+
     public void resetFields(){
         studId.setText(null);
         studName.setText(null);
@@ -787,6 +816,7 @@ public class StudentsForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu aiMenu;
     private javax.swing.JMenu dataMenu;
     private javax.swing.JLabel databaseLabel;
     private javax.swing.JButton deleteButton;
@@ -828,6 +858,7 @@ public class StudentsForm extends javax.swing.JFrame {
     private javax.swing.JMenuItem teachMenu;
     private javax.swing.JMenu teacherMenu;
     private javax.swing.JButton torButton;
+    private javax.swing.JMenuItem trainMenu;
     private javax.swing.JButton updateButton;
     // End of variables declaration//GEN-END:variables
 }

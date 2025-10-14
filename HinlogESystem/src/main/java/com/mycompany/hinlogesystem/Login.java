@@ -68,6 +68,12 @@ public class Login extends javax.swing.JFrame {
 
         jLabel3.setText("School Year:");
 
+        dataInput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dataInputActionPerformed(evt);
+            }
+        });
+
         passInput.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 passInputActionPerformed(evt);
@@ -85,7 +91,7 @@ public class Login extends javax.swing.JFrame {
                         .addComponent(submitBtn)
                         .addGap(63, 63, 63))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 67, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(dataInput, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
@@ -219,6 +225,10 @@ public class Login extends javax.swing.JFrame {
     private void passInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passInputActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_passInputActionPerformed
+
+    private void dataInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dataInputActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_dataInputActionPerformed
 
     /**
      * @param args the command line arguments
