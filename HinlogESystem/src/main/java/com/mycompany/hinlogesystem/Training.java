@@ -63,7 +63,7 @@ public class Training {
     }
     
     public void toARFF(){
-        String output = db + ".arff";
+        String output = "train.arff";
         
         try {
             String query2 = "SELECT subId FROM subjects";
@@ -111,7 +111,7 @@ public class Training {
     }
     
     public void train() throws Exception{
-        DataSource source = new DataSource(db + ".arff");
+        DataSource source = new DataSource("train.arff");
         Instances data = source.getDataSet();
 
         data.setClassIndex(data.numAttributes() - 1);
@@ -125,8 +125,8 @@ public class Training {
         System.out.println(tree);
         System.out.println(eval.toSummaryString("\nEvaluation Results\n", false));
 
-        SerializationHelper.write(db + ".model", tree);
-        System.out.println("Model saved: " + db +".model");
+        SerializationHelper.write("train.model", tree);
+        System.out.println("Model saved: " + "train.model");
     }
     
 //    public void predict(String id, String course, String gender, String yr) throws Exception{

@@ -21,10 +21,10 @@ public class Predict extends Training{
     
     public void predict(String id, String course, String gender, String yr) throws Exception{
         // Load trained model
-        Classifier model = (Classifier) weka.core.SerializationHelper.read(db + ".model");
+        Classifier model = (Classifier) weka.core.SerializationHelper.read("train.model");
 
         // Load structure from ARFF
-        DataSource source = new DataSource(db + ".arff");
+        DataSource source = new DataSource("train.arff");
         Instances structure = source.getStructure();
         structure.setClassIndex(structure.numAttributes() - 1);
 

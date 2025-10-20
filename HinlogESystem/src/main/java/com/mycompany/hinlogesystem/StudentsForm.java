@@ -687,6 +687,7 @@ public class StudentsForm extends javax.swing.JFrame {
         databaseLabel.setText(system.db);
         
         showRecords();
+        ShowEnrollRec();
         Subform.showRecords();
         Tform.showRecords();
     }//GEN-LAST:event_secondSem26ActionPerformed
@@ -710,6 +711,7 @@ public class StudentsForm extends javax.swing.JFrame {
         databaseLabel.setText(system.db);
         
         showRecords();
+        ShowEnrollRec();
         Subform.showRecords();
         Tform.showRecords();
     }//GEN-LAST:event_summer26ActionPerformed
@@ -721,6 +723,7 @@ public class StudentsForm extends javax.swing.JFrame {
         databaseLabel.setText(system.db);
         
         showRecords();
+        ShowEnrollRec();
         Subform.showRecords();
         Tform.showRecords();
     }//GEN-LAST:event_firstSem27ActionPerformed
@@ -732,6 +735,7 @@ public class StudentsForm extends javax.swing.JFrame {
         databaseLabel.setText(system.db);
         
         showRecords();
+        ShowEnrollRec();
         Subform.showRecords();
         Tform.showRecords();
     }//GEN-LAST:event_secondSem27ActionPerformed
@@ -743,6 +747,7 @@ public class StudentsForm extends javax.swing.JFrame {
         databaseLabel.setText(system.db);
         
         showRecords();
+        ShowEnrollRec();
         Subform.showRecords();
         Tform.showRecords();
     }//GEN-LAST:event_summer27ActionPerformed
@@ -770,7 +775,11 @@ public class StudentsForm extends javax.swing.JFrame {
         HinlogESystem system = new HinlogESystem();
         Predict pred = new Predict();
         
+        
+        
         try {
+            
+            
             pred.predict(id, course, gender, yr);
             ShowEnrollRec();
             
