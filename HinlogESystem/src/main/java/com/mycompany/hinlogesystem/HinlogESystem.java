@@ -190,7 +190,7 @@ public class HinlogESystem {
         } 
         
         switch (db) {
-            case "2ndSem_Sy2025_2026":
+            case "1stSem_Sy2026_2027":
                 try {
                     copyData("1stSem_Sy2025_2026", db);
                 } catch (Exception e) {
@@ -198,26 +198,9 @@ public class HinlogESystem {
                 }
                 break;
 
-            case "Summer_Sy2025_2026":
-                try {
-                    copyData("2ndSem_Sy2025_2026", db);
-                    System.out.println("Data copied successfully.");
-                } catch (Exception e) {
-                    System.out.println("Error while copying data: " + e.getMessage());
-                }
-                break;
-
-            case "1stSem_Sy2026_2027":
-                try {
-                    copyData("Summer_Sy2025_2026", db);
-                } catch (Exception e) {
-                    System.out.println("Error while copying data: " + e.getMessage());
-                }
-                break;
-
             case "2ndSem_Sy2026_2027":
                 try {
-                    copyData("1stSem_Sy2026_2027", db);
+                    copyData("2ndSem_Sy2025_2026", db);
                 } catch (Exception e) {
                     System.out.println("Error while copying data: " + e.getMessage());
                 }
@@ -225,7 +208,7 @@ public class HinlogESystem {
 
             case "Summer_Sy2026_2027":
                 try {
-                    copyData("2ndSem_Sy2026_2027", db);
+                    copyData("Summer_Sy2025_2026", db);
                 } catch (Exception e) {
                     System.out.println("Error while copying data: " + e.getMessage());
                 }
@@ -233,7 +216,7 @@ public class HinlogESystem {
 
             case "1stSem_Sy2027_2028":
                 try {
-                    copyData("Summer_Sy2026_2027", db);
+                    copyData("1stSem_Sy2026_2027", db);
                 } catch (Exception e) {
                     System.out.println("Error while copying data: " + e.getMessage());
                 }
@@ -241,7 +224,7 @@ public class HinlogESystem {
 
             case "2ndSem_Sy2027_2028":
                 try {
-                    copyData("1stSem_Sy2027_2028", db);
+                    copyData("2ndSem_Sy206_2027", db);
                 } catch (Exception e) {
                     System.out.println("Error while copying data: " + e.getMessage());
                 }
@@ -249,7 +232,7 @@ public class HinlogESystem {
 
             case "Summer_Sy2027_2028":
                 try {
-                    copyData("2ndSem_Sy2027_2028", db);
+                    copyData("Summer_Sy2067_2027", db);
                 } catch (Exception e) {
                     System.out.println("Error while copying data: " + e.getMessage());
                 }
@@ -270,6 +253,18 @@ public class HinlogESystem {
             String copyQuery = "INSERT INTO " + targetDb + ".students" +
                          " SELECT * FROM " + sourceDb + ".students";
             st.executeUpdate(copyQuery);
+            
+            String copyQuery2 = "INSERT INTO " + targetDb + ".subjects" +
+                         " SELECT * FROM " + sourceDb + ".subjects";
+            st.executeUpdate(copyQuery2);
+            
+            String copyQuery3 = "INSERT INTO " + targetDb + ".teachers" +
+                         " SELECT * FROM " + sourceDb + ".teachers";
+            st.executeUpdate(copyQuery3);
+            
+            String copyQuery4 = "INSERT INTO " + targetDb + ".assign" +
+                         " SELECT * FROM " + sourceDb + ".assign";
+            st.executeUpdate(copyQuery4);
 
             System.out.println("Data copied from " + sourceDb + " to " + targetDb);
             

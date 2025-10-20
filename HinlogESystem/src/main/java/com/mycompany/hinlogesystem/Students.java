@@ -26,15 +26,15 @@ public class Students extends HinlogESystem{
             String password = "AdDU" + name;
             
             //create user
-            try {
-                String createUserQuery = "CREATE USER '"+ username+ "'@'%' IDENTIFIED BY '" + password + "';";
-                st.executeUpdate(createUserQuery);
-                
-                System.out.println("student user created: " + username);
-                
-            } catch (Exception ex){
-                System.out.println("Failed to create student user / user already exists: " + ex);
-            }
+//            try {
+//                String createUserQuery = "CREATE USER '"+ username+ "'@'%' IDENTIFIED BY '" + password + "';";
+//                st.executeUpdate(createUserQuery);
+//                
+//                System.out.println("student user created: " + username);
+//                
+//            } catch (Exception ex){
+//                System.out.println("Failed to create student user / user already exists: " + ex);
+//            }
             
             //grant privelages
 //            try {

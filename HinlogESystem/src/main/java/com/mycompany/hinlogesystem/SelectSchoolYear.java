@@ -4,6 +4,8 @@
  */
 package com.mycompany.hinlogesystem;
 
+import javax.swing.JFrame;
+
 /**
  *
  * @author khenshi
@@ -17,6 +19,7 @@ public class SelectSchoolYear extends javax.swing.JFrame {
      */
     public SelectSchoolYear() {
         initComponents();
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
     /**
@@ -31,7 +34,7 @@ public class SelectSchoolYear extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         yearInput = new javax.swing.JComboBox<>();
-        jButton1 = new javax.swing.JButton();
+        selectBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -51,10 +54,10 @@ public class SelectSchoolYear extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("Select");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        selectBtn.setText("Select");
+        selectBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                selectBtnActionPerformed(evt);
             }
         });
 
@@ -69,7 +72,7 @@ public class SelectSchoolYear extends javax.swing.JFrame {
                         .addComponent(jLabel1))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(140, 140, 140)
-                        .addComponent(jButton1))
+                        .addComponent(selectBtn))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(88, 88, 88)
                         .addComponent(jLabel2)
@@ -87,7 +90,7 @@ public class SelectSchoolYear extends javax.swing.JFrame {
                     .addComponent(yearInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
                 .addGap(18, 18, 18)
-                .addComponent(jButton1)
+                .addComponent(selectBtn)
                 .addContainerGap(114, Short.MAX_VALUE))
         );
 
@@ -98,9 +101,9 @@ public class SelectSchoolYear extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_yearInputActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void selectBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectBtnActionPerformed
+        Training train = new Training((String)yearInput.getSelectedItem());
+    }//GEN-LAST:event_selectBtnActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         HinlogESystem system = new HinlogESystem();
@@ -145,9 +148,9 @@ public class SelectSchoolYear extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JButton selectBtn;
     private javax.swing.JComboBox<String> yearInput;
     // End of variables declaration//GEN-END:variables
 }
