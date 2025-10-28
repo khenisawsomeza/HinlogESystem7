@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<solver>
+    <solutionClass>com.mycompany.hinlogesystem.aisched.EnrollmentSolution</solutionClass>
+    <entityClass>com.mycompany.hinlogesystem.aisched.Enrollment</entityClass>
+
+    <scoreDirectorFactory>
+        <constraintProviderClass>
+            com.mycompany.hinlogesystem.aisched.EnrollmentConstraintProvider
+        </constraintProviderClass>
+    </scoreDirectorFactory>
+</solver>

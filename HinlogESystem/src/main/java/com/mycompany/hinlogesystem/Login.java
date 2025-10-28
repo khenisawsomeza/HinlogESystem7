@@ -202,6 +202,7 @@ public class Login extends javax.swing.JFrame {
         String grantsStr = grants.toString().toUpperCase();
 
         if (username.equals("root") || grantsStr.contains("ALL PRIVILEGES")) {
+            addDelimeter();
             StudentsForm form = new StudentsForm();
             form.setVisible(true);
             form.setLocationRelativeTo(null);
@@ -230,9 +231,74 @@ public class Login extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_dataInputActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    public void addDelimeter(){
+        HinlogESystem system = new HinlogESystem();
+        
+        try {
+            String createProcedure = """
+            CREATE PROCEDURE IF NOT EXISTS CheckSchedule(
+                IN p_studId INT,
+                IN p_subId INT,
+                OUT p_conflict BOOLEAN,
+                OUT p_conflictSched VARCHAR(100)
+            )
+            BEGIN
+                DECLARE done INT DEFAULT 0;
+                DECLARE v_existingSched VARCHAR(100);
+                DECLARE v_newSched VARCHAR(100);
+
+                DECLARE sched_cursor CURSOR FOR
+                    SELECT s.subSchedule
+                    FROM subjects s
+                    JOIN Enroll e ON e.subjid = s.subId
+                    WHERE e.studid = p_studId;
+
+                DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+                SET p_conflict = FALSE;
+                SET p_conflictSched = NULL;
+
+                -- Get the schedule of the new subject
+                SELECT subSchedule INTO v_newSched
+                FROM subjects
+                WHERE subId = p_subId;
+
+                OPEN sched_cursor;
+
+                read_loop: LOOP
+                    FETCH sched_cursor INTO v_existingSched;
+                    IF done = 1 THEN
+                        LEAVE read_loop;
+                    END IF;
+
+                    -- Check if the schedule days overlap (MWF, TTH, etc.)
+                    IF (
+                        (v_existingSched LIKE '%MWF%' AND v_newSched LIKE '%MWF%')
+                        OR (v_existingSched LIKE '%TTH%' AND v_newSched LIKE '%TTH%')
+                        OR (v_existingSched = v_newSched)
+                    ) THEN
+                        SET p_conflict = TRUE;
+                        SET p_conflictSched = v_existingSched;
+                        LEAVE read_loop;
+                    END IF;
+                END LOOP;
+
+                CLOSE sched_cursor;
+            END
+            """;
+
+            system.st = system.con.createStatement();
+            system.st.execute(createProcedure);
+            system.st.close();
+
+            System.out.println("Stored procedure 'CheckSchedule' created (or already exists).");
+
+        } catch (Exception e) {
+            System.out.println("Failed to create stored procedure: " + e);
+        }
+
+        
+    }
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

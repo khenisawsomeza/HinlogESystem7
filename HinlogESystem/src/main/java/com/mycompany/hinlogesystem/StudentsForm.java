@@ -5,7 +5,17 @@
 package com.mycompany.hinlogesystem;
 
 import static com.mycompany.hinlogesystem.HinlogESystem.st;
+import com.mycompany.hinlogesystem.aisched.Subject;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -69,6 +79,7 @@ public class StudentsForm extends javax.swing.JFrame {
         summer27 = new javax.swing.JMenuItem();
         aiMenu = new javax.swing.JMenu();
         trainMenu = new javax.swing.JMenuItem();
+        schedButton = new javax.swing.JCheckBoxMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -406,6 +417,20 @@ public class StudentsForm extends javax.swing.JFrame {
         });
         aiMenu.add(trainMenu);
 
+        schedButton.setSelected(true);
+        schedButton.setText("Conflict Schedule");
+        schedButton.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                schedButtonStateChanged(evt);
+            }
+        });
+        schedButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                schedButtonActionPerformed(evt);
+            }
+        });
+        aiMenu.add(schedButton);
+
         jMenuBar1.add(aiMenu);
 
         setJMenuBar(jMenuBar1);
@@ -542,7 +567,92 @@ public class StudentsForm extends javax.swing.JFrame {
         
         int response = JOptionPane.showConfirmDialog(null,"Enroll Student ID:" + studId + " to subject ID:" + subId,"Alert", JOptionPane.OK_CANCEL_OPTION);
         
-        if (response == JOptionPane.YES_OPTION) {            
+        if (response == JOptionPane.YES_OPTION) {  
+            
+//            try {
+//                if(hasScheduleConflict(studId, subId)){
+//                    System.out.println("Sched have conflict"); 
+//                    return;
+//                }
+//            } catch (Exception e){
+//                System.out.println("Failed to check conflict");
+//            }
+            if (schedButton.isSelected()){
+                try {
+                    List<Subject> enrolledSubjects = new ArrayList<>();
+                    String getEnrolled = "SELECT s.* FROM subjects s " +
+                                         "JOIN Enroll e ON s.subId = e.subjid " +
+                                         "WHERE e.studid = " + studId;
+                    ResultSet rs = system.st.executeQuery(getEnrolled);
+                    while (rs.next()) {
+                        enrolledSubjects.add(new Subject(
+                            rs.getInt("subId"),
+                            rs.getString("subCode"),
+                            rs.getString("subDescription"),
+                            rs.getString("subSchedule")
+                        ));
+                    }
+                    
+                    String getSubject = "SELECT * FROM subjects WHERE subId = " + subId;
+                    ResultSet rs2 = system.st.executeQuery(getSubject);
+                    Subject newSubject = null;
+                    if (rs2.next()) {
+                        newSubject = new Subject(
+                            rs2.getInt("subId"),
+                            rs2.getString("subCode"),
+                            rs2.getString("subDescription"),
+                            rs2.getString("subSchedule")
+                        );
+                    }
+                    
+                    boolean hasConflict = false;
+                    for (Subject existing : enrolledSubjects) {
+                        if (existing.conflictsWith(newSubject)) {
+                            JOptionPane.showMessageDialog(
+                                null,
+                                "Conflict",
+                                "Conflict Detected",
+                                JOptionPane.WARNING_MESSAGE
+                            );
+                            hasConflict = true;
+                            break;
+                        }
+                    }
+                    
+                    if(hasConflict){
+                        return;
+                    }
+                        
+                } catch (Exception e){
+                    System.out.println("Failed to load subjects to ai (1)");
+                }
+                     
+            } else {
+                try {
+                    CallableStatement cs = system.con.prepareCall("{CALL CheckSchedule(?, ?, ?, ?)}");
+                    cs.setInt(1, studId);
+                    cs.setInt(2, subId);
+                    cs.registerOutParameter(3, Types.BOOLEAN);
+                    cs.registerOutParameter(4, Types.VARCHAR);
+
+                    cs.execute();
+
+                    boolean conflict = cs.getBoolean(3);
+                    String conflictSched = cs.getString(4);
+
+                    if (conflict) {
+                        JOptionPane.showMessageDialog(null,
+                            "Conflicting schedule: " + conflictSched,
+                            "Conflict",
+                            JOptionPane.WARNING_MESSAGE);
+                            return;
+                    }
+                    
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null,  "Error checking or enrolling: " + e.getMessage());
+                }
+            }
+            
             try {
                 String checkQuery = "SELECT * FROM Enroll WHERE studid = " + studId + " And subjid = " + subId;
                 ResultSet rs = system.st.executeQuery(checkQuery);
@@ -812,6 +922,19 @@ public class StudentsForm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void schedButtonStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_schedButtonStateChanged
+
+
+    }//GEN-LAST:event_schedButtonStateChanged
+
+    private void schedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_schedButtonActionPerformed
+        if (schedButton.isSelected()) {
+            System.out.println("Conflict AI Checked!");
+        } else {
+            System.out.println("Conflict AI Unchecked!");
+}
+    }//GEN-LAST:event_schedButtonActionPerformed
+
     public void resetFields(){
         studId.setText(null);
         studName.setText(null);
@@ -878,6 +1001,115 @@ public class StudentsForm extends javax.swing.JFrame {
         }       
     }
     
+    private boolean hasScheduleConflict(int studId, int newSubId) throws SQLException {
+        HinlogESystem system = new HinlogESystem();
+        
+        String newSchedQuery = "SELECT subSchedule FROM subjects WHERE subId = ?";
+        try (PreparedStatement psNew = system.con.prepareStatement(newSchedQuery)) {
+            psNew.setInt(1, newSubId);
+            ResultSet rsNew = psNew.executeQuery();
+
+            if (!rsNew.next()) {
+                System.out.println("Subject not found!");
+                return false;
+            }
+
+            String newSchedule = rsNew.getString("subSchedule");
+
+            // Get all enrolled subject schedules
+            String enrolledSchedQuery = """
+                SELECT s.subSchedule FROM subjects s
+                JOIN Enroll e ON e.subjid = s.subId
+                WHERE e.studid = ?
+            """;
+            try (PreparedStatement ps = system.con.prepareStatement(enrolledSchedQuery)) {
+                ps.setInt(1, studId);
+                ResultSet rs = ps.executeQuery();
+
+                while (rs.next()) {
+                    String existing = rs.getString("subSchedule");
+                    if (isConflict(existing, newSchedule)) {
+                        System.out.println("Conflict with: " + existing);
+                        javax.swing.JOptionPane.showMessageDialog(
+                                null,
+                                "Conflict with " + existing,
+                                "Schedule Conflict",
+                                javax.swing.JOptionPane.WARNING_MESSAGE
+                            );
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    private boolean isConflict(String sched1, String sched2) {
+        if (sched1 == null || sched2 == null) return false;
+
+        try {
+            // Example formats:
+            // "MWF 09:00-10:30"
+            // "TTH 13:00-15:00"
+
+            String[] parts1 = sched1.split(" ");
+            String[] parts2 = sched2.split(" ");
+            if (parts1.length < 2 || parts2.length < 2) return false;
+
+            // Extract days and time ranges
+            String days1 = parts1[0];
+            String days2 = parts2[0];
+            String[] time1 = parts1[1].split("-");
+            String[] time2 = parts2[1].split("-");
+
+            LocalTime start1 = LocalTime.parse(time1[0]);
+            LocalTime end1 = LocalTime.parse(time1[1]);
+            LocalTime start2 = LocalTime.parse(time2[0]);
+            LocalTime end2 = LocalTime.parse(time2[1]);
+
+            // Expand day abbreviations into individual days
+            Set<String> daySet1 = expandDays(days1);
+            Set<String> daySet2 = expandDays(days2);
+
+            // Check for any overlapping day
+            for (String d1 : daySet1) {
+                if (daySet2.contains(d1)) {
+                    // same day — check if time overlaps
+                    if (start1.isBefore(end2) && start2.isBefore(end1)) {
+                        return true;
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            System.out.println("⚠️ Invalid schedule format: " + sched1 + " / " + sched2);
+        }
+        return false;
+    }
+    
+    private Set<String> expandDays(String dayCode) {
+        Set<String> days = new HashSet<>();
+        dayCode = dayCode.toUpperCase();
+
+        if (dayCode.contains("M")) days.add("MON");
+        if (dayCode.contains("W")) days.add("WED");
+        if (dayCode.contains("F")) days.add("FRI");
+
+        // Handle TTH (Thursday needs two letters)
+        if (dayCode.contains("TTH")) {
+            days.add("TUE");
+            days.add("THU");
+        } else {
+            if (dayCode.contains("T")) days.add("TUE");
+            if (dayCode.contains("H")) days.add("THU");
+        }
+
+        if (dayCode.contains("SAT")) days.add("SAT");
+        if (dayCode.contains("SUN")) days.add("SUN");
+
+        return days;
+    }
+    
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -912,6 +1144,7 @@ public class StudentsForm extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JButton saveButton;
+    private javax.swing.JCheckBoxMenuItem schedButton;
     private javax.swing.JMenuItem secondSem25;
     private javax.swing.JMenuItem secondSem27;
     private javax.swing.JTextField studAddress;
