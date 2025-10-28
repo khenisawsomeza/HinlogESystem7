@@ -236,7 +236,8 @@ public class Login extends javax.swing.JFrame {
         
         try {
             String createProcedure = """
-            CREATE PROCEDURE IF NOT EXISTS CheckSchedule(
+            DROP PROCEDURE IF EXISTS CheckScheduleConflict;
+            CREATE PROCEDURE CheckScheduleConflict(
                 IN p_studId INT,
                 IN p_subId INT,
                 OUT p_conflict BOOLEAN,
@@ -246,45 +247,60 @@ public class Login extends javax.swing.JFrame {
                 DECLARE done INT DEFAULT 0;
                 DECLARE v_existingSched VARCHAR(100);
                 DECLARE v_newSched VARCHAR(100);
-
-                DECLARE sched_cursor CURSOR FOR
+                DECLARE v_existingDays VARCHAR(10);
+                DECLARE v_newDays VARCHAR(10);
+                DECLARE v_existingStart TIME;
+                DECLARE v_existingEnd TIME;
+                DECLARE v_newStart TIME;
+                DECLARE v_newEnd TIME;
+            
+                DECLARE cur CURSOR FOR
                     SELECT s.subSchedule
                     FROM subjects s
                     JOIN Enroll e ON e.subjid = s.subId
                     WHERE e.studid = p_studId;
-
+            
                 DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
-
+            
                 SET p_conflict = FALSE;
                 SET p_conflictSched = NULL;
-
-                -- Get the schedule of the new subject
+            
+                -- get new subject's sched
                 SELECT subSchedule INTO v_newSched
                 FROM subjects
                 WHERE subId = p_subId;
-
-                OPEN sched_cursor;
-
+            
+                -- extract new subject day and time
+                SET v_newDays = SUBSTRING_INDEX(v_newSched, ' ', 1);
+                SET v_newStart = STR_TO_DATE(SUBSTRING_INDEX(SUBSTRING_INDEX(v_newSched, ' ', -1), '-', 1), '%H:%i');
+                SET v_newEnd = STR_TO_DATE(SUBSTRING_INDEX(SUBSTRING_INDEX(v_newSched, '-', -1), ' ', 1), '%H:%i');
+            
+                OPEN cur;
+            
                 read_loop: LOOP
-                    FETCH sched_cursor INTO v_existingSched;
+                    FETCH cur INTO v_existingSched;
                     IF done = 1 THEN
                         LEAVE read_loop;
                     END IF;
-
-                    -- Check if the schedule days overlap (MWF, TTH, etc.)
-                    IF (
-                        (v_existingSched LIKE '%MWF%' AND v_newSched LIKE '%MWF%')
-                        OR (v_existingSched LIKE '%TTH%' AND v_newSched LIKE '%TTH%')
-                        OR (v_existingSched = v_newSched)
-                    ) THEN
-                        SET p_conflict = TRUE;
-                        SET p_conflictSched = v_existingSched;
-                        LEAVE read_loop;
+            
+                    -- extract day and time
+                    SET v_existingDays = SUBSTRING_INDEX(v_existingSched, ' ', 1);
+                    SET v_existingStart = STR_TO_DATE(SUBSTRING_INDEX(SUBSTRING_INDEX(v_existingSched, ' ', -1), '-', 1), '%H:%i');
+                    SET v_existingEnd = STR_TO_DATE(SUBSTRING_INDEX(SUBSTRING_INDEX(v_existingSched, '-', -1), ' ', 1), '%H:%i');
+            
+                    -- if days are the same, check for time overlap
+                    IF v_existingDays = v_newDays THEN
+                        IF (v_newStart < v_existingEnd AND v_newEnd > v_existingStart) THEN
+                            SET p_conflict = TRUE;
+                            SET p_conflictSched = v_existingSched;
+                            LEAVE read_loop;
+                        END IF;
                     END IF;
+            
                 END LOOP;
-
-                CLOSE sched_cursor;
-            END
+            
+                CLOSE cur;
+            END;
             """;
 
             system.st = system.con.createStatement();

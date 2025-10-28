@@ -569,14 +569,7 @@ public class StudentsForm extends javax.swing.JFrame {
         
         if (response == JOptionPane.YES_OPTION) {  
             
-//            try {
-//                if(hasScheduleConflict(studId, subId)){
-//                    System.out.println("Sched have conflict"); 
-//                    return;
-//                }
-//            } catch (Exception e){
-//                System.out.println("Failed to check conflict");
-//            }
+
             if (schedButton.isSelected()){
                 try {
                     List<Subject> enrolledSubjects = new ArrayList<>();
@@ -628,28 +621,36 @@ public class StudentsForm extends javax.swing.JFrame {
                 }
                      
             } else {
+//                try {
+//                    CallableStatement cs = system.con.prepareCall("{CALL CheckScheduleConflict(?, ?, ?, ?)}");
+//                    cs.setInt(1, studId);
+//                    cs.setInt(2, subId);
+//                    cs.registerOutParameter(3, Types.BOOLEAN);
+//                    cs.registerOutParameter(4, Types.VARCHAR);
+//                    cs.execute();
+//
+//                    boolean conflict = cs.getBoolean(3);
+//                    String conflictSched = cs.getString(4);
+//
+//                    if (conflict) {
+//                        JOptionPane.showMessageDialog(null,
+//                            "Conflicting schedule: " + conflictSched,
+//                            "Conflict",
+//                            JOptionPane.WARNING_MESSAGE);
+//                            return;
+//                    }
+//                    
+//                } catch (Exception e) {
+//                    JOptionPane.showMessageDialog(null,  "Error checking or enrolling: " + e.getMessage());
+//                }
+                
                 try {
-                    CallableStatement cs = system.con.prepareCall("{CALL CheckSchedule(?, ?, ?, ?)}");
-                    cs.setInt(1, studId);
-                    cs.setInt(2, subId);
-                    cs.registerOutParameter(3, Types.BOOLEAN);
-                    cs.registerOutParameter(4, Types.VARCHAR);
-
-                    cs.execute();
-
-                    boolean conflict = cs.getBoolean(3);
-                    String conflictSched = cs.getString(4);
-
-                    if (conflict) {
-                        JOptionPane.showMessageDialog(null,
-                            "Conflicting schedule: " + conflictSched,
-                            "Conflict",
-                            JOptionPane.WARNING_MESSAGE);
-                            return;
+                   if(hasScheduleConflict(studId, subId)){
+                       System.out.println("Sched have conflict"); 
+                       return;
                     }
-                    
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null,  "Error checking or enrolling: " + e.getMessage());
+                } catch (Exception e){
+                    System.out.println("Failed to check conflict");
                 }
             }
             
